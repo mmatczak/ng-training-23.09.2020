@@ -1,4 +1,4 @@
-<form>
+<form (submit)="notifyOnBookUpdate($event)">
   <div class="form-group row">
     <label for="author" class="col-sm-2 col-form-label">Author</label>
     <div class="col-sm-10">
@@ -12,5 +12,8 @@
       <input type="text" class="form-control" id="title"
              [value]="book.title">
     </div>
+  </div>
+  <div class="row">
+    <button type="submit" class="btn btn-primary col-4">Populate</button>
   </div>
 </form>
