@@ -1,0 +1,32 @@
+<div class="row">
+  <div class="col-8">
+    <input #search class="form-control" aria-label="Search" placeholder="Type to search">
+  </div>
+</div>
+<div class="row">
+  <section class="col-8">
+    <table class="table table-hover">
+      <thead class="thead-dark">
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Author</th>
+        <th scope="col">Title</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let book of (books$ | async); index as i"
+          (click)="selectBook(book)"
+          [class.table-active]="isBookSelected(book)" >
+        <th scope="row">{{i + 1}}</th>
+        <td>{{book.author}}</td>
+        <td>{{book.title}}</td>
+      </tr>
+      </tbody>
+    </table>
+  </section>
+  <section class="col-4">
+    <app-book-details *ngIf="selectedBook"
+                      [book]="selectedBook"
+                      (bookUpdate)="updateBook($event)"></app-book-details>
+  </section>
+</div>
