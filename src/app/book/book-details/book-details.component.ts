@@ -1,5 +1,14 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {Book} from '../book';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
+import { Book } from '../book';
+import { maxLength } from './validators';
 
 @Component({
   selector: 'app-book-details',
@@ -7,24 +16,36 @@ import {Book} from '../book';
   styleUrls: ['./book-details.component.scss']
 })
 export class BookDetailsComponent {
-  @Input()
+  @Input('book')
+  set bookSetter(book: Book) {
+    this.book = book;
+    this.bookFormGroup.reset(book);
+  }
+
+  get authorControl(){
+    return this.bookFormGroup.get('author');
+  }  
+  get titleControl(){
+    return this.bookFormGroup.get('title');
+  }
   book: Book;
 
   @Output()
   bookUpdate = new EventEmitter<Book>();
 
-  notifyOnBookUpdate(event: Event): void {
-    event.preventDefault();
-    const form = event.target as HTMLFormElement;
-    const authorElement = form.querySelector<HTMLInputElement>('#author');
-    const titleElement = form.querySelector<HTMLInputElement>('#title');
+  bookFormGroup: FormGroup = this.fb.group({
+    author: ['', [Validators.required, maxLength(60)]],
+    title: ['', [Validators.required, maxLength(100)]],
+  });
 
+  constructor(private readonly fb: FormBuilder) {}
+
+  notifyOnBookUpdate(): void {
     const updatedBook: Book = {
       id: this.book.id,
-      author: authorElement.value,
-      title: titleElement.value
+      author: this.bookFormGroup.get('author').value,
+      title: this.bookFormGroup.get('title').value,
     };
-
     this.bookUpdate.emit(updatedBook);
   }
 }

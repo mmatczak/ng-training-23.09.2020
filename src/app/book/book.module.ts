@@ -3,6 +3,7 @@ import {CommonModule} from '@angular/common';
 import {BookDetailsComponent} from './book-details/book-details.component';
 import {BookOverviewComponent} from './book-overview/book-overview.component';
 import {BookService} from './book.service';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [BookDetailsComponent, BookOverviewComponent],
@@ -10,6 +11,8 @@ import {BookService} from './book.service';
     BookOverviewComponent
   ],
   imports: [
+    FormsModule,
+    ReactiveFormsModule,
     CommonModule
   ]
 })
