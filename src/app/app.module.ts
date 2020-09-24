@@ -10,7 +10,7 @@ import {BookModule} from './book/book.module';
   ],
   imports: [
     BrowserModule,
-    BookModule
+    BookModule.forRoot()
   ],
   bootstrap: [AppComponent]
 })
