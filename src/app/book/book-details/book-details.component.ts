@@ -7,6 +7,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { Book } from '../book';
+import { FormModel } from './forms.helper';
 import { maxLength } from './validators';
 
 @Component({
@@ -17,22 +18,21 @@ import { maxLength } from './validators';
 export class BookDetailsComponent {
   @Input('book')
   set bookSetter(book: Book) {
-    this.book = book;
     this.bookFormGroup.reset(book);
   }
-
-  book: Book;
 
   @Output()
   bookUpdate = new EventEmitter<Book>();
 
-  bookFormGroup: FormGroup = this.fb.group({
-    author: ['', [Validators.required, maxLength(60)]],
+  bookFormGroupDef: FormModel<Book> = {
+    author:  ['', [Validators.required, maxLength(60)]],
+    id: {value: undefined, disabled: true},
     title: ['', [Validators.required, maxLength(100)]],
-  });
+  };
+
+  bookFormGroup: FormGroup = this.fb.group(this.bookFormGroupDef);
 
   constructor(private readonly fb: FormBuilder) {}
-
 
   getErrorMsg(controlName: string): string[]{
     const formControl: AbstractControl = this.bookFormGroup.get(controlName);
@@ -55,11 +55,6 @@ export class BookDetailsComponent {
     return errorMessages;
   }
   notifyOnBookUpdate(): void {
-    const updatedBook: Book = {
-      id: this.book.id,
-      author: this.bookFormGroup.get('author').value,
-      title: this.bookFormGroup.get('title').value,
-    };
-    this.bookUpdate.emit(updatedBook);
+    this.bookUpdate.emit(this.bookFormGroup.getRawValue());
   }
 }
