@@ -5,11 +5,10 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './main-header.component.html',
   styleUrls: ['./main-header.component.scss']
 })
-export class MainHeaderComponent implements OnInit {
+export class MainHeaderComponent {
+  collapsed = false;
 
-  constructor() { }
-
-  ngOnInit(): void {
+  toggle(): void {
+    this.collapsed = !this.collapsed;
   }
-
 }
