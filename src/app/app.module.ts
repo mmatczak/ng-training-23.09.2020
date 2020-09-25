@@ -36,7 +36,7 @@ import {HttpClientModule} from '@angular/common/http';
       }
     ]),
     BookModule.forRoot(),
-    SharedModule
+    SharedModule.forRoot()
   ],
   bootstrap: [AppComponent]
 })
