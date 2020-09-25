@@ -1,10 +1,9 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
   FormControl,
   FormGroup,
-  ValidationErrors,
   Validators,
 } from '@angular/forms';
 import { Book } from '../book';
@@ -22,12 +21,6 @@ export class BookDetailsComponent {
     this.bookFormGroup.reset(book);
   }
 
-  get authorControl(){
-    return this.bookFormGroup.get('author');
-  }  
-  get titleControl(){
-    return this.bookFormGroup.get('title');
-  }
   book: Book;
 
   @Output()
@@ -40,6 +33,27 @@ export class BookDetailsComponent {
 
   constructor(private readonly fb: FormBuilder) {}
 
+
+  getErrorMsg(controlName: string): string[]{
+    const formControl: AbstractControl = this.bookFormGroup.get(controlName);
+    const errorMessages = [];
+
+    if (formControl?.errors){
+      Object.keys(formControl.errors)
+      .forEach((errorKey) => {
+          let msg = 'Unknown error';
+          if (errorKey === 'required'){
+            msg = 'Please provide a value';
+          }
+          if (errorKey === 'maxLength'){
+            msg = 'Value too long';
+          }
+          errorMessages.push(msg);
+      });
+    }
+
+    return errorMessages;
+  }
   notifyOnBookUpdate(): void {
     const updatedBook: Book = {
       id: this.book.id,

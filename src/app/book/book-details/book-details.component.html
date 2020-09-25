@@ -1,42 +1,35 @@
-<form [formGroup]="bookFormGroup" (submit)="notifyOnBookUpdate()">
-  <div class="validation-msg">Invalid data</div>
+<form [formGroup]="bookFormGroup" (ngSubmit)="notifyOnBookUpdate()"
+  #bookFormDirective="ngForm"
+  [class.ng-submitted]="bookFormDirective.submitted"
+>
   <div class="form-group row">
     <label for="author" class="col-sm-2 col-form-label">Author</label>
     <div class="col-sm-10">
       <input type="text" class="form-control" 
       formControlName="author"
-      [ngClass]="{
-        'is-invalid': bookFormGroup.get('author').invalid,
-        'is-valid': bookFormGroup.get('author').valid
-      }"
       id="author"      
 >
-      <span *ngIf="bookFormGroup.get('author').errors?.required">
-        Required
-      </span>      
-      <span *ngIf="bookFormGroup.get('author').errors?.maxLength">
-        {{bookFormGroup.get('author').errors.maxLength}}
-      </span>
+      <div class="invalid-feedback">
+        <span *ngFor="let error of getErrorMsg('author')">
+            {{error}}
+        </span>
+      </div>
     </div>
   </div>
   <div class="form-group row">
     <label for="title" class="col-sm-2 col-form-label">Title</label>
     <div class="col-sm-10">
       <input type="text" class="form-control"       
-      [ngClass]="{
-        'is-invalid': bookFormGroup.get('title').invalid,
-        'is-valid': bookFormGroup.get('title').valid
-      }" 
       id="title" formControlName="title">
-      <span *ngIf="bookFormGroup.get('title').errors?.required">
-        Required
-      </span>      
-      <span *ngIf="bookFormGroup.get('title').errors?.maxLength">
-        {{bookFormGroup.get('title').errors.maxLength}}
-      </span>
+      <div class="invalid-feedback">
+        <span *ngFor="let error of getErrorMsg('title')">
+            {{error}}
+        </span>
+
+      </div>
     </div>
   </div>
   <div class="row">
-    <button type="submit" class="btn btn-primary col-4">Populate</button>
+    <button type="submit" class="btn btn-primary col-4" [disabled]="!bookFormGroup.valid">Populate</button>
   </div>
 </form>
