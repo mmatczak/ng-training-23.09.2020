@@ -38,7 +38,7 @@ describe('BookDetailsComponent', () => {
         expect(updatedBook.title).toBe(updatedTitle);
       });
       // when
-      component.notifyOnBookUpdate(eventMock);
+      component.saveAndNavigateToOverview(eventMock);
     });
   });
 

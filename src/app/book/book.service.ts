@@ -2,19 +2,21 @@ import {Book} from './book';
 import {BehaviorSubject, Observable} from 'rxjs';
 
 export class BookService {
+  private idSeq = 0;
+
   private booksSubject = new BehaviorSubject<Book[]>([
     {
-      id: 0,
+      id: this.idSeq++,
       author: 'Douglas Crockford',
       title: 'JavaScript. The Good Parts'
     },
     {
-      id: 1,
+      id: this.idSeq++,
       author: 'John Example',
       title: 'Angular for newbies'
     },
     {
-      id: 2,
+      id: this.idSeq++,
       author: 'Marek Matczak',
       title: 'Angular for nerds'
     }
@@ -26,14 +28,33 @@ export class BookService {
     return this.books$;
   }
 
-  update(bookToUpdate: Book): Observable<Book> {
+  getOne(id: number): Observable<Book> {
     return new Observable<Book>(subscriber => {
-      const bookToUpdateCopy = {...bookToUpdate};
       const currentBooks = this.booksSubject.getValue();
-      const newBooks = currentBooks.map(book => book.id === bookToUpdateCopy.id ? bookToUpdateCopy : book);
-      this.booksSubject.next(newBooks);
+      const foundBook = currentBooks.find(book => book.id === id);
+      if (foundBook) {
+        subscriber.next(foundBook);
+        subscriber.complete();
+      } else {
+        subscriber.error(`Book with id ${id} could not be found`);
+      }
+    });
+  }
 
-      subscriber.next(bookToUpdateCopy);
+  saveOrUpdate(bookToSaveOrUpdate: Book): Observable<Book> {
+    return new Observable<Book>(subscriber => {
+      const currentBooks = this.booksSubject.getValue();
+      let returnedBook;
+      let newBooks;
+      if (bookToSaveOrUpdate.id != null) {
+        returnedBook = {...bookToSaveOrUpdate};
+        newBooks = currentBooks.map(book => book.id === returnedBook.id ? returnedBook : book);
+      } else {
+        returnedBook = {id: this.idSeq++, ...bookToSaveOrUpdate};
+        newBooks = [...currentBooks, returnedBook];
+      }
+      this.booksSubject.next(newBooks);
+      subscriber.next(returnedBook);
       subscriber.complete();
     });
   }

@@ -1,13 +1,10 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import {
-  AbstractControl,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
-import { Book } from '../book';
-import { maxLength } from './validators';
+import {Component} from '@angular/core';
+import {AbstractControl, FormBuilder, FormGroup, Validators,} from '@angular/forms';
+import {Book} from '../book';
+import {maxLength} from './validators';
+import {ActivatedRoute, Router} from '@angular/router';
+import {pluck} from 'rxjs/operators';
+import {BookService} from '../book.service';
 
 @Component({
   selector: 'app-book-details',
@@ -15,51 +12,61 @@ import { maxLength } from './validators';
   styleUrls: ['./book-details.component.scss']
 })
 export class BookDetailsComponent {
-  @Input('book')
-  set bookSetter(book: Book) {
-    this.book = book;
-    this.bookFormGroup.reset(book);
-  }
-
-  book: Book;
-
-  @Output()
-  bookUpdate = new EventEmitter<Book>();
-
   bookFormGroup: FormGroup = this.fb.group({
     author: ['', [Validators.required, maxLength(60)]],
     title: ['', [Validators.required, maxLength(100)]],
   });
 
-  constructor(private readonly fb: FormBuilder) {}
+  private book: Book;
 
+  constructor(private readonly fb: FormBuilder,
+              private readonly route: ActivatedRoute,
+              private readonly router: Router,
+              private readonly books: BookService) {
+    route.data
+      .pipe(
+        pluck('book')
+      )
+      .subscribe(book => this.initFormWith(book));
+  }
 
-  getErrorMsg(controlName: string): string[]{
+  private initFormWith(book: Book): void {
+    if (book) {
+      this.book = book;
+      this.bookFormGroup.reset(book);
+    }
+  }
+
+  getErrorMsg(controlName: string): string[] {
     const formControl: AbstractControl = this.bookFormGroup.get(controlName);
     const errorMessages = [];
 
-    if (formControl?.errors){
+    if (formControl?.errors) {
       Object.keys(formControl.errors)
-      .forEach((errorKey) => {
+        .forEach((errorKey) => {
           let msg = 'Unknown error';
-          if (errorKey === 'required'){
+          if (errorKey === 'required') {
             msg = 'Please provide a value';
           }
-          if (errorKey === 'maxLength'){
+          if (errorKey === 'maxLength') {
             msg = 'Value too long';
           }
           errorMessages.push(msg);
-      });
+        });
     }
 
     return errorMessages;
   }
-  notifyOnBookUpdate(): void {
-    const updatedBook: Book = {
-      id: this.book.id,
-      author: this.bookFormGroup.get('author').value,
-      title: this.bookFormGroup.get('title').value,
-    };
-    this.bookUpdate.emit(updatedBook);
+
+  saveAndNavigateToOverview(): void {
+    if (this.bookFormGroup.valid) {
+      const updatedBook: Book = {
+        id: this.book?.id,
+        author: this.bookFormGroup.get('author').value,
+        title: this.bookFormGroup.get('title').value,
+      };
+      this.books.saveOrUpdate(updatedBook)
+        .subscribe(() => this.router.navigate(['/books']));
+    }
   }
 }

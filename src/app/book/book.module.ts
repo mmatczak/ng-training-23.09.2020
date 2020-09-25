@@ -1,9 +1,9 @@
 import {ModuleWithProviders, NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
 import {BookDetailsComponent} from './book-details/book-details.component';
 import {BookOverviewComponent} from './book-overview/book-overview.component';
 import {BookService} from './book.service';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {SharedModule} from '../shared/shared.module';
+import {BookResolver} from './book-details/book.resolver';
 
 @NgModule({
   declarations: [BookDetailsComponent, BookOverviewComponent],
@@ -11,16 +11,14 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     BookOverviewComponent
   ],
   imports: [
-    FormsModule,
-    ReactiveFormsModule,
-    CommonModule
+    SharedModule
   ]
 })
 export class BookModule {
   static forRoot(): ModuleWithProviders<BookModule> {
     return {
       ngModule: BookModule,
-      providers: [BookService]
+      providers: [BookService, BookResolver]
     };
   }
 }
